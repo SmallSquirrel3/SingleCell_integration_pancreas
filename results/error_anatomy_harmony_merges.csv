@@ -1,0 +1,9 @@
+harmony_cluster,cluster_dominant,celltype,n,top_tech,share_top_tech,share_top_tech_expected,n_techs_>=10%
+4,acinar,ductal,193,inDrop2,0.51,0.14,2
+7,activated_stellate,quiescent_stellate,193,inDrop1,0.48,0.48,3
+5,macrophage,mast,42,inDrop2,0.21,0.21,5
+8,beta,delta,32,celseq2,0.38,0.19,3
+4,acinar,alpha,27,inDrop3,0.37,0.21,4
+7,activated_stellate,schwann,25,inDrop2,0.24,0.24,4
+8,beta,alpha,25,celseq2,0.48,0.15,3
+1,alpha,ductal,21,celseq,0.81,0.15,2

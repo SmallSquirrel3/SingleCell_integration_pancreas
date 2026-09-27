@@ -1,0 +1,19 @@
+# Minimum versions. Exact versions used for the executed notebooks are printed in the
+# first cell of each notebook (01–05: scanpy 1.12.2 / scvi-tools 1.5.0 / Python 3.13 on
+# Windows; 07–08: scanpy 1.11.5 / scvi-tools 1.4.2 / Python 3.11 on Linux).
+scvi-tools>=1.1
+scanpy>=1.10
+anndata>=0.10
+python-igraph
+leidenalg
+harmonypy
+torch
+numpy
+pandas
+scipy
+scikit-learn
+scikit-image      # needed by scanpy's built-in scrublet (notebook 08)
+matplotlib
+seaborn
+tabulate          # DataFrame.to_markdown in notebook 07
+jupyter
