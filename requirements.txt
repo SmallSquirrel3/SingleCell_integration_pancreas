@@ -1,11 +1,9 @@
-# Minimum versions. Exact versions used for the executed notebooks are printed in the
-# first cell of each notebook (01–05: scanpy 1.12.2 / scvi-tools 1.5.0 / Python 3.13 on
-# Windows; 07–08: scanpy 1.11.5 / scvi-tools 1.4.2 / Python 3.11 on Linux).
+# Minimum versions. The exact environment used to execute every notebook is pinned in
+# environment.yml (scanpy 1.12.2 / scvi-tools 1.5.0 / Python 3.13, Windows, CPU only).
 scvi-tools>=1.1
 scanpy>=1.10
 anndata>=0.10
-python-igraph
-leidenalg
+python-igraph     # Leiden via flavor="igraph"
 harmonypy
 torch
 numpy

@@ -1,6 +1,5 @@
 n_stable,n_unstable,pair,errors with pred_marker > p95 of true type,errors with true_marker < p05 of true type,"doublet score, median errors","doublet score, median correct true type",p (errors > correct),predicted doublets among errors,"n_genes, median errors","n_genes, median correct true type",mean confidence (stable errors)
-7,5,beta → delta,100%,29%,0.12,0.024,0.000109,0%,5878,5720,0.91
-7,0,alpha → acinar,100%,100%,0.081,0.033,4.26e-05,0%,6931,5671,0.97
-5,3,alpha → beta,80%,40%,0.178,0.033,0.00472,0%,4684,5671,0.84
-3,20,alpha → gamma,100%,100%,0.11,0.033,0.00856,0%,5139,5671,0.87
-3,13,acinar → ductal,33%,67%,0.037,0.037,0.53,0%,5193,7653,0.91
+8,13,alpha → gamma,62%,75%,0.071,0.033,0.000287,0%,5572,5671,0.86
+7,5,beta → delta,100%,43%,0.081,0.024,0.000131,0%,5841,5695,0.93
+7,0,alpha → acinar,100%,100%,0.081,0.033,4.69e-05,0%,6931,5671,0.98
+3,4,alpha → beta,67%,33%,0.178,0.033,0.0228,0%,3779,5671,0.81

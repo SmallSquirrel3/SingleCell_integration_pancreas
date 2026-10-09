@@ -3,12 +3,13 @@
 > library size, per-technology ambient floors and five-seed stability. Outcome: the
 > "acinar-to-ductal metaplasia" reading is **not supported** (the 193 cells are `ductal`
 > cells in the acinar cluster, ~90 % from two Baron batches, with an acinar enzyme program
-> and weak ductal markers; the 3 stable acinar → ductal errors are low-content acinar cells);
-> "alpha → gamma survived four runs" is **not supported** (3 stable cells, 20 seed-dependent
-> ones; counts per run hid near-complete turnover of *which* cells); the alpha → acinar
+> and weak ductal markers; acinar → ductal on the hold-out is 1 stable cell against 19 seed-dependent ones);
+> "alpha → gamma survived four runs" is **not supported** as stated (8 stable cells, 13
+> seed-dependent ones, a graded GCG/PPY boundary rather than a confusion; counts per run hid
+> the turnover of *which* cells); the alpha → acinar
 > errors are **annotation errors in the source**, not model errors; the beta → delta errors
 > are mostly **polyhormonal profiles** with normal library size. The final-numbers table
-> below is superseded by the README (single-run values are within 0.01 of the five-seed means in `07`).
+> below is superseded by the README (the five-seed means are in `07`).
 > The stellate/immune merges are resolution effects, as stated here.
 
 # 06. Error Analysis — What Actually Went "Wrong", and Why That's Interesting

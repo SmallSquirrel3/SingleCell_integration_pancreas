@@ -1,0 +1,32 @@
+# Exact environment in which every notebook in this repository was executed
+# (Windows 10, CPU only, Python 3.13). `requirements.txt` lists the same packages
+# with minimum versions only.
+#
+#   conda env create -f environment.yml
+#   conda activate scpancreas
+name: scpancreas
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - pip
+  - pip:
+      - scvi-tools==1.5.0.post1
+      - torch==2.10.0
+      - lightning==2.6.5
+      - scanpy==1.12.2
+      - anndata==0.13.2
+      - python-igraph==1.0.0
+      - harmonypy==0.0.10
+      - umap-learn==0.5.12
+      - numpy==2.3.5
+      - pandas==2.3.3
+      - scipy==1.16.3
+      - scikit-learn==1.9.0
+      - scikit-image==0.25.2
+      - matplotlib==3.11.1
+      - seaborn==0.13.2
+      - tabulate==0.9.0
+      - jupyter==1.1.1
+      - nbconvert==7.16.6
+      - ipykernel==6.31.0

@@ -8,7 +8,7 @@ metabolomics; the connection to metabolic disease is the tissue and the methods,
 next step (below) is the disease contrast.
 
 The project went through two passes. The first (`01`–`06`) was a method comparison with a
-single number per method. The second (`07`–`08`, plus a new section in `05`) is what a
+single number per method. The second (`07`–`08`, plus edits to `03`–`05`) is what a
 critical reader of the first pass would have asked for: numbers with error bars, a
 comparison that is actually fair to the unsupervised methods, and an error analysis that
 tests its claims instead of narrating them. Several of the first pass's conclusions did
@@ -16,25 +16,25 @@ not survive; the ones that did are stated below with the evidence.
 
 ## What the second pass changed, and why
 
-1. **The README quoted numbers from a run that no longer existed.** The first README
-   reported scANVI ARI 0.959 / accuracy 98.0 % while `results/` held 0.950 / 97.5 %. All
-   tables below are now printed by `python src/make_readme_tables.py` from the CSVs in
-   `results/`, so they cannot drift from the notebooks again.
+1. **The README quoted numbers from a run that no longer existed.** All tables below are
+   printed by `python src/make_readme_tables.py` from the CSVs in `results/`, so they
+   cannot drift from the notebooks again. Every notebook in the repository was executed
+   top to bottom, in order, in one environment (`environment.yml`).
 2. **scANVI's all-cell ARI was compared with unsupervised methods as if it were one of
-   them.** scANVI was trained with the labels of ~85 % of the cells. `notebooks/patch_05_heldout.py`
-   (being merged into `05` as section 4b) adds three views on the held-out technology — and the honest answer turned out to be more
+   them.** scANVI was trained with the labels of ~85 % of the cells. `05 §4b` adds three
+   views on the held-out technology — and the honest answer turned out to be more
    interesting than the fix (Table 3).
-3. **No seed, single runs, third-decimal claims.** `07` fixes the seed and repeats scVI and
-   scANVI five times: mean ± sd, training curves, and per-cell predictions per seed
-   (Table 2).
+3. **No seed, single runs, third-decimal claims.** `03`/`04` now fix seed 0 and report
+   macro-F1 next to accuracy; `07` repeats scVI and scANVI five times: mean ± sd, training
+   curves, and per-cell predictions per seed (Table 2).
 4. **The error analysis was a narrative.** `06` explained the errors biologically without
    looking at a single gene. `08` tracks which cells are mislabelled *consistently* across
    seeds, then tests four competing explanations (annotation, doublet, ambient RNA, genuine
    co-expression) with marker panels, Scrublet, library size and per-technology ambient
-   floors. About half of the first pass's "errors" were initialization noise (Table 4).
-5. Housekeeping: figures are no longer git-ignored (the README embeds them), `06` is kept
-   as a record with a header saying which of its claims were refuted, and dead code and
-   unused dependencies were removed.
+   floors. About a third of a single run's "errors" are initialization noise (Table 4).
+5. Housekeeping: figures are tracked (the README embeds them), `06` is kept as a record
+   with a header saying which of its claims were refuted, and dead code and unused
+   dependencies were removed.
 
 ## Results
 
@@ -42,19 +42,19 @@ not survive; the ones that did are stated below with the evidence.
 
 | Method | Leiden res. | ARI (all cells) | NMI (all cells) | clusters |
 |---|---|---|---|---|
-| scANVI | 0.3 | 0.950 | 0.926 | 13 |
-| scVI | 0.3 | 0.947 | 0.914 | 11 |
+| scANVI | 0.3 | 0.955 | 0.932 | 13 |
+| scVI | 0.3 | 0.953 | 0.922 | 11 |
 | Harmony | 0.3 | 0.914 | 0.888 | 12 |
 | baseline (no integration) | 0.3 | 0.428 | 0.708 | 19 |
 
-*Table 1 — single run without a fixed seed (notebooks 02–05), Leiden clustering of each latent space scored against the
+*Table 1 — single run (seed 0), Leiden clustering of each latent space scored against the
 14 annotated cell types, best resolution of a 0.3–1.3 sweep (notebook 05). The optimum
 sits at the edge of the sweep for every method; finer resolutions were not explored.*
 
 | Method | seeds | ARI all cells | NMI all cells | held-out accuracy | held-out macro-F1 |
 |---|---|---|---|---|---|
-| scVI | 5 | 0.948 ± 0.002 | 0.916 ± 0.003 | — | — |
-| scANVI | 5 | 0.956 ± 0.002 | 0.934 ± 0.005 | 0.976 ± 0.003 | 0.943 ± 0.011 |
+| scVI | 5 | 0.946 ± 0.002 | 0.912 ± 0.002 | — | — |
+| scANVI | 5 | 0.956 ± 0.004 | 0.933 ± 0.006 | 0.975 ± 0.003 | 0.939 ± 0.014 |
 
 *Table 2 — five seeds, mean ± sd (notebook 07). Harmony is deterministic. Held-out
 accuracy and macro-F1 are scANVI's own label transfer to the 2394 `smartseq2` cells whose
@@ -63,10 +63,17 @@ hold-out.*
 
 The jump from no integration to any integration (ARI 0.43 → 0.91+) is the large effect.
 The ordering scANVI > scVI > Harmony on all-cell ARI holds in every seed, but for scANVI
-this is partly the supervision showing, not the integration: restricted to held-out cells,
-scVI and scANVI are indistinguishable (ARI 0.949 ± 0.003 vs 0.947 ± 0.006, notebook 07).
-No seed triggered early stopping; the validation ELBO is flat from about epoch 100, so
-"200 epochs reached" meant converged, not under-trained (`results/figures/07_training_curves.png`).
+this is partly the supervision showing, not the integration. Restricted to the held-out
+cells, where neither model saw a label, scANVI is still ahead in every seed, by a smaller
+margin: ARI 0.952 ± 0.007 vs 0.943 ± 0.005 (notebook 07). A gap of 0.01 is at the
+resolution limit of five seeds and one hold-out technology; an earlier sweep with
+scvi-tools 1.4 found the two level. No seed triggered early stopping; the validation ELBO
+is flat from about epoch 100, so "200 epochs reached" meant converged, not under-trained
+(`results/figures/07_training_curves.png`).
+
+The single seed-0 scVI run in `03` (ARI 0.953) sits about three standard deviations above
+the five-seed mean. A fixed seed makes a notebook repeatable; it does not make one draw the
+result, which is why Table 2, not Table 1, is the comparison to quote.
 
 ![Before integration](results/figures/01_baseline_umap.png)
 *Uncorrected PCA/UMAP: plate-based technologies form their own islands. The picture is
@@ -76,77 +83,86 @@ true and misleading at the same time — see Table 3.*
 
 | Method | ARI all cells | ARI held-out only | kNN transfer acc. → smartseq2 | kNN transfer macro-F1 | batch mixing (50-NN) | cell-type purity (50-NN) |
 |---|---|---|---|---|---|---|
-| scANVI | 0.950 | 0.949 | 0.984 | 0.971 | 0.676 | 0.979 |
-| scVI | 0.947 | 0.945 | 0.973 | 0.952 | 0.650 | 0.958 |
+| scANVI | 0.955 | 0.953 | 0.982 | 0.963 | 0.677 | 0.979 |
+| scVI | 0.953 | 0.966 | 0.980 | 0.968 | 0.649 | 0.959 |
 | Harmony | 0.914 | 0.950 | 0.980 | 0.902 | 0.793 | 0.959 |
-| baseline (no integration) | 0.428 | 0.940 | 0.981 | 0.938 | 0.203 | 0.971 |
+| baseline (no integration) | 0.428 | 0.918 | 0.981 | 0.938 | 0.203 | 0.971 |
 
-*Table 3 — `notebooks/patch_05_heldout.py` (section 4b of `05`). "ARI held-out only": the same Leiden clustering, scored on the
-`smartseq2` cells alone. "kNN transfer": a 15-nearest-neighbour classifier fitted on all
-labelled non-`smartseq2` cells in each latent space and applied to the `smartseq2` cells.
-"Batch mixing": for each cell, the fraction of its 50 nearest neighbours from other
-technologies divided by the fraction expected under perfect mixing (1 = as mixed as
-random). "Purity": fraction of the 50 nearest neighbours with the same annotated type.*
+*Table 3 — notebook 05 §4b, single runs. "ARI held-out only": the same Leiden clustering,
+scored on the `smartseq2` cells alone. "kNN transfer": a 15-nearest-neighbour classifier
+fitted on all labelled non-`smartseq2` cells in each latent space and applied to the
+`smartseq2` cells. "Batch mixing": for each cell, the fraction of its 50 nearest
+neighbours from other technologies divided by the fraction expected under perfect mixing
+(1 = as mixed as random). "Purity": fraction of the 50 nearest neighbours with the same
+annotated type.*
 
 ![Held-out views](results/figures/05_heldout_views.png)
 
 Three things this table says that the first pass did not know:
 
 * **Every latent space — including uncorrected PCA — transfers labels to `smartseq2` at
-  97–98 %.** Within one technology there is no batch effect to remove, and across
+  ≈ 98 %.** Within one technology there is no batch effect to remove, and across
   technologies the batch shift is smaller than the distance between cell types in the
   30-dimensional PC space, so a cell's nearest reference neighbours are the right type even
   before correction. The UMAP islands exaggerate a shift that is real but small relative
-  to biology. scANVI's 97.6 % label-transfer accuracy is therefore **not** evidence that
-  scANVI is needed for this hold-out; a kNN on scANVI's own latent space matches or beats scANVI's
-  classification head on macro-F1 (0.971 on the reference run's latent space vs
-  0.943 ± 0.011 for the head across seeds, same 13-type label set).
+  to biology. scANVI's 97.5 % label-transfer accuracy is therefore **not** evidence that
+  scANVI is needed for this hold-out; a kNN on scANVI's own latent space beats scANVI's
+  classification head on macro-F1 (0.963 vs 0.939 ± 0.014 across seeds, same 13-type
+  label set).
 * **What integration changes is batch mixing, and there Harmony leads** (0.79 vs 0.65–0.68
   for the scVI family), at a slightly lower purity than scANVI. scANVI's purity edge is what
   supervision buys, not what integration buys.
 * **A single metric picks a winner; two axes show a trade-off.** This is the scIB point,
-  reproduced on the scIB dataset: the ranking depends on what is asked.
+  reproduced on the scIB dataset: the ranking depends on what is asked. Single runs cannot
+  even order scVI and scANVI on held-out ARI (0.966 vs 0.953 here, the reverse over five
+  seeds).
 
 ### 3. Anatomy of the errors (notebook 08)
 
-Of the 59 `smartseq2` cells the single reference run mislabelled, 30 are mislabelled in
-≥ 4 of 5 seeds, 24 in only 1–3 seeds, and 5 in none; 6 cells the reference run got right
-are stable errors. The two "recurring" errors the first pass built its story on — alpha →
-gamma and acinar → ductal — are 3 stable cells each, with 20 and 13 unstable ones: a soft
-boundary the model wobbles across, not a reproducible confusion.
+Of the 64 `smartseq2` cells the single reference run mislabelled, 34 are mislabelled in
+≥ 4 of 5 seeds, 19 in only 1–3 seeds, and 11 in none; 3 cells the reference run got right
+are stable errors. Of the two "recurring" errors the first pass built its story on,
+acinar → ductal is 1 stable cell and 19 unstable ones — a soft boundary the model wobbles
+across, not a reproducible confusion — and alpha → gamma is 8 stable and 13 unstable, a
+graded GCG/PPY boundary rather than a clean confusion.
 
 ![Error stability](results/figures/08_B_error_stability.png)
 
 | Error (true → predicted) | stable / unstable cells | errors with predicted-type marker above p95 of true type | errors with true-type marker below p05 of true type | doublet score, errors vs correct (median) | genes detected, errors vs correct (median) | mean confidence |
 |---|---|---|---|---|---|---|
-| beta → delta | 7 / 5 | 100% | 29% | 0.120 vs 0.024 | 5878 vs 5720 | 0.91 |
-| alpha → acinar | 7 / 0 | 100% | 100% | 0.081 vs 0.033 | 6931 vs 5671 | 0.97 |
-| alpha → beta | 5 / 3 | 80% | 40% | 0.178 vs 0.033 | 4684 vs 5671 | 0.84 |
-| alpha → gamma | 3 / 20 | 100% | 100% | 0.110 vs 0.033 | 5139 vs 5671 | 0.87 |
-| acinar → ductal | 3 / 13 | 33% | 67% | 0.037 vs 0.037 | 5193 vs 7653 | 0.91 |
+| alpha → gamma | 8 / 13 | 62% | 75% | 0.071 vs 0.033 | 5572 vs 5671 | 0.86 |
+| beta → delta | 7 / 5 | 100% | 43% | 0.081 vs 0.024 | 5841 vs 5695 | 0.93 |
+| alpha → acinar | 7 / 0 | 100% | 100% | 0.081 vs 0.033 | 6931 vs 5671 | 0.98 |
+| alpha → beta | 3 / 4 | 67% | 33% | 0.178 vs 0.033 | 3779 vs 5671 | 0.81 |
 
-*Table 4 — stable errors on the `smartseq2` hold-out, evidence per pair. Marker per type:
-GCG (alpha), INS (beta), SST (delta), PPY (gamma), PRSS1 (acinar), KRT19 (ductal).
-Doublet score: Scrublet, run per technology. "Correct" = correctly labelled cells of the
-true type from the same technology.*
+*Table 4 — stable errors on the `smartseq2` hold-out (pairs with ≥ 3 stable cells),
+evidence per pair. Marker per type: GCG (alpha), INS (beta), SST (delta), PPY (gamma),
+PRSS1 (acinar), KRT19 (ductal). Doublet score: Scrublet, run per technology. "Correct" =
+correctly labelled cells of the true type from the same technology.*
 
 Verdicts, in one line each (full reasoning and per-cell heatmaps in `08`):
 
-* **alpha → acinar (7 stable, 0 unstable): annotation error in the source.** Full acinar
-  enzyme program, GCG at 2.3 vs 10.2 in alpha cells, acinar-like gene count. The model is
-  right and the label is wrong — so the reported accuracy is a lower bound.
+* **alpha → acinar (7 stable, 0 unstable): annotation error in the source.** Acinar enzyme
+  program in all seven, GCG at 2.3 vs 10.2 in alpha cells, acinar-like gene count. The
+  model is right and the label is wrong — so the reported accuracy is a lower bound.
 * **beta → delta (7 / 5): mixed.** Two are delta cells labelled beta. The rest are
-  *polyhormonal* profiles (INS + SST, several with GCG and PPY as well) with a normal library
-  size and no ambient explanation (the `smartseq2` hormone floor in non-endocrine cells is
+  *polyhormonal* profiles (INS + SST, several with GCG as well) with a normal library size
+  and no ambient explanation (the `smartseq2` hormone floor in non-endocrine cells is
   0.01 % of counts). A genuine co-expressing cell is the best-supported reading; a sorted
   multiplet cannot be excluded from expression alone.
-* **alpha → beta (5 / 3): bihormonal INS⁺GCG⁺ profile** without the library-size signature
-  of a doublet; same verdict, same caveat.
-* **alpha → gamma (3 / 20): model noise on a GCG/PPY continuum.** Not the reproducible
-  biological confusion the first pass claimed.
-* **acinar → ductal (3 / 13): data quality.** Low-content acinar cells (5193 genes vs 7653)
-  with no ductal program and a normal doublet score. **Nothing supports acinar-to-ductal
-  metaplasia**, which the first pass had floated.
+* **alpha → gamma (8 / 13): a GCG/PPY continuum.** Two cells look like gamma cells labelled
+  alpha; the rest carry both hormones at intermediate levels, and the unstable flips sit on
+  the same margin.
+* **alpha → beta (3 / 4): bihormonal INS⁺GCG⁺ profile** without the library-size signature
+  of a doublet (the lowest gene count of any group); same caveat.
+* **acinar → ductal (1 / 19): seed noise plus one low-quality cell.** **Nothing supports
+  acinar-to-ductal metaplasia**, which the first pass had floated.
+
+The stable/unstable split is only as good as five seeds. An earlier sweep (Linux,
+scvi-tools 1.4) gave the same verdicts for the two pairs with a clear marker signature —
+alpha → acinar 7 / 0 and beta → delta 7 / 5, identical — but put alpha → gamma at 3 / 20
+and acinar → ductal at 3 / 13. Borderline cells move across a "4 of 5 seeds" threshold
+between sweeps; the pairs whose verdict rests on markers do not.
 
 The Harmony merges at coarse resolution split the same way. The 193 `ductal` cells in the
 acinar cluster come almost entirely from two of the four Baron `inDrop` batches (51 % and
@@ -159,27 +175,28 @@ collapsing at resolution 0.3.
 ![Ductal cells in the acinar cluster](results/figures/08_A_ductal_in_acinar_markers.png)
 
 Model confidence does not flag these errors: stable errors carry a mean max-probability of
-0.84–0.97 against 0.998 for correct cells, and the most confident errors are the ones where
-the annotation, not the model, is wrong.
+0.81–0.98 per pair against 0.998 for correct cells, and the most confident errors are the
+ones where the annotation, not the model, is wrong.
 
 ## What this changes about the first pass's conclusions
 
 Retracted: acinar-to-ductal metaplasia as an explanation for anything here; alpha → gamma
-as a "consistent" error; "scANVI is the best integration method" as an unqualified
-statement. Qualified: scANVI has the highest all-cell ARI because it saw the labels;
-Harmony mixes batches best; on the held-out technology the methods are equivalent for
-label transfer, and so is no integration at all. Kept: integration is what makes joint
-clustering work (ARI 0.43 → 0.91+); the stellate/immune merges are resolution effects.
+as a "consistent" error between two distinct types; "scANVI is the best integration method"
+as an unqualified statement. Qualified: scANVI has the highest all-cell ARI largely because
+it saw the labels, with a small (≈ 0.01 ARI) edge left on held-out cells; Harmony mixes
+batches best; on the held-out technology the methods are equivalent for label transfer, and
+so is no integration at all. Kept: integration is what makes joint clustering work
+(ARI 0.43 → 0.91+); the stellate/immune merges are resolution effects.
 
 ## Dataset
 
 The pancreas integration benchmark from Luecken et al., *Nature Methods* 2022 (scIB):
 16,382 cells, 19,093 genes, four studies on nine technology batches (Baron — inDrop1–4;
 Muraro — celseq/celseq2; Segerstolpe — smartseq2; Xin/Lawlor — smarter, fluidigmc1), 14
-annotated cell types.
+annotated cell types. Notebook 01 downloads it on first run:
 
 ```python
-adata = sc.read("pancreas.h5ad", backup_url="https://exampledata.scverse.org/scvi-tools/pancreas.h5ad")
+adata = sc.read("../data/raw/pancreas.h5ad", backup_url="https://exampledata.scverse.org/scvi-tools/pancreas.h5ad")
 ```
 
 Caveats that matter for reading the results: the object is pre-filtered (no mitochondrial
@@ -194,41 +211,50 @@ negative-binomial model. Donor identity and disease status are not in the object
 |---|---|
 | `01_qc_eda.ipynb` | Load, batch/cell-type structure, batch-aware HVGs, uncorrected PCA/UMAP |
 | `02_baseline_integration.ipynb` | Harmony, resolution sweep |
-| `03_scvi.ipynb` | scVI, same evaluation |
-| `04_scanvi.ipynb` | scANVI with `smartseq2` labels hidden; label transfer on the held-out cells |
-| `05_evaluation.ipynb` | All methods in one table. The second-pass held-out views (kNN transfer, batch mixing vs purity) are computed by `patch_05_heldout.py` and are being merged into `05` as section 4b |
+| `03_scvi.ipynb` | scVI (seed 0), training curve, same evaluation |
+| `04_scanvi.ipynb` | scANVI with `smartseq2` labels hidden; label transfer on the held-out cells, accuracy and macro-F1 |
+| `05_evaluation.ipynb` | All methods in one table; **§4b: held-out views, kNN transfer, batch mixing vs purity** |
 | `06_error_analysis.md` | First-pass narrative, kept for the record with a header on what `08` refuted |
 | `07_seed_stability.ipynb` | Five seeds for scVI/scANVI: mean ± sd, training curves, per-cell predictions per seed |
 | `08_error_anatomy.ipynb` | Stable vs unstable errors; markers, Scrublet, library size, ambient floors; Harmony merges by technology |
 | `src/make_readme_tables.py` | Prints every table in this README from `results/*.csv` |
 
-`03` and `04` are the original first-pass runs, trained without a fixed seed; the run-to-run
-spread is measured in `07`. Fixing the seed in `03`/`04` and merging `patch_05_heldout.py`
-into `05` are planned for the next update.
+```
+├── data/
+│   ├── raw/            pancreas.h5ad (downloaded by 01, not tracked)
+│   └── processed/      h5ad outputs of 01–04 (not tracked)
+├── notebooks/          01–08, executed, outputs kept
+├── results/            CSV tables written by 05, 07, 08
+│   └── figures/        every figure the notebooks save
+├── src/                make_readme_tables.py
+├── environment.yml     exact versions used for the executed notebooks
+└── requirements.txt    minimum versions
+```
 
 ## Running it
 
 ```bash
-pip install -r requirements.txt
-jupyter notebook notebooks/01_qc_eda.ipynb     # then 02 → 08 in order
-cd notebooks && python patch_05_heldout.py && cd ..   # held-out views (Table 3), until merged into 05
-python src/make_readme_tables.py               # regenerates the tables above
+conda env create -f environment.yml && conda activate scpancreas
+# or: pip install -r requirements.txt
+cd notebooks
+jupyter nbconvert --to notebook --execute --inplace 01_qc_eda.ipynb   # then 02 → 08 in order
+cd .. && python src/make_readme_tables.py                             # regenerates the tables above
 ```
 
-No GPU needed. scVI/scANVI train in 5–15 minutes per seed on a laptop CPU (about 25
-minutes per seed on the 2-core machine used for `07`). The five-seed sweep in `07` is the
-only long step (~2 hours on 2 cores). Exact package versions are printed in the first cell
-of each notebook; `01`–`05` were run with scanpy 1.12 / scvi-tools 1.5 on Windows,
-`07`–`08` with scanpy 1.11 / scvi-tools 1.4 on Linux. The five-seed means in `07` sit within
-0.01 of the single runs in `03`/`04` (scVI ARI 0.948 vs 0.947, scANVI 0.956 vs 0.950,
-accuracy 0.976 vs 0.975); exact agreement across two scvi-tools versions is not expected.
+No GPU needed. Every notebook in this repository was executed on one Windows laptop CPU
+with Python 3.13, scanpy 1.12.2 and scvi-tools 1.5.0 (`environment.yml`). scVI took about
+25 minutes in `03`, scANVI about 35 in `04`; the five-seed sweep in `07` is the only long
+step (2 h 10 min, 20–35 minutes per seed). `08` and the rest take minutes. `01` writes a
+2.5 GB intermediate file to `data/processed/`. Exact agreement with numbers from a
+different scvi-tools version or machine is not expected — that is what Table 2 is for.
 
 ## Limitations
 
 * Leiden resolution is tuned against the annotation (standard for method comparison, not
   an unsupervised result), and the optimum sits at the lower edge of the sweep.
-* Stable-error groups are 3–7 cells; the verdicts are per-cell readings of expression,
-  not population statistics.
+* Stable-error groups are 3–8 cells; the verdicts are per-cell readings of expression,
+  not population statistics, and the stable/unstable boundary moves between five-seed
+  sweeps for borderline pairs.
 * Scrublet was designed for droplet data and run on reconstructed counts; its scores are
   used only relatively, and it called no doublets among the error cells. Separating a
   polyhormonal cell from a sorted multiplet needs an orthogonal signal.
