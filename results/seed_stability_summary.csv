@@ -1,3 +1,3 @@
 method,ARI_all_mean,ARI_all_std,NMI_all_mean,NMI_all_std,ARI_heldout_mean,ARI_heldout_std,NMI_heldout_mean,NMI_heldout_std,accuracy_heldout_mean,accuracy_heldout_std,macroF1_heldout_mean,macroF1_heldout_std,mean_confidence_heldout_mean,mean_confidence_heldout_std
-scVI,0.9476,0.0019,0.9161,0.0028,0.9493,0.003,0.9323,0.0044,,,,,,
-scANVI,0.9556,0.0023,0.9342,0.0048,0.9473,0.0061,0.9323,0.0092,0.976,0.0026,0.9433,0.0107,0.9924,0.0019
+scVI,0.9458,0.0016,0.9118,0.0021,0.9431,0.005,0.9226,0.0052,,,,,,
+scANVI,0.9556,0.0041,0.9335,0.0063,0.9521,0.007,0.9373,0.0059,0.9748,0.003,0.9395,0.0139,0.9924,0.0015

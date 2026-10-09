@@ -11,5 +11,6 @@ __pycache__/
 scvi_log/
 lightning_logs/
 # figures are tracked on purpose: README.md embeds them
-# working notes, not part of the published repository
+# second-pass working notes; their edits are now merged into 03/04/05
 notebooks/PATCHES_iteration2.md
+notebooks/patch_05_heldout.py
